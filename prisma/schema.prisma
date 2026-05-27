@@ -1,0 +1,21 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ServiceRequest {
+  id          String   @id @default(cuid())
+  productId   String                        // QR에 인코딩된 제품 ID
+  phone       String
+  latitude    Float
+  longitude   Float
+  address     String                        // 역지오코딩 결과 (예: "서울시 강남구 테헤란로 152")
+  status      String   @default("RECEIVED") // SQLite는 enum 타입을 기본 지원하지 않으므로 string으로 다루되 애플리케이션 레벨에서 Status로 관리
+  memo        String?                       // 관리자 메모
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
