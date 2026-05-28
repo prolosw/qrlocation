@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { reverseGeocode } from '@/lib/kakao';
+import { sendSMS } from '@/lib/aligo';
 
 export const runtime = 'nodejs';
 
@@ -89,6 +90,39 @@ export async function POST(req: NextRequest) {
         status: 'RECEIVED',
       },
     });
+
+    // 5. 알리고 SMS 문자 발송 (실패하더라도 API 응답은 성공하도록 try-catch 감쌈)
+    try {
+      // 고객 문자 발송
+      const customerMsg = `[제품 긴급 지원 요청]
+고객님, 긴급 지원 서비스 요청이 성공적으로 접수되었습니다.
+
+■ 접수 제품: ${productId}
+■ 접수 현장: ${finalAddress}
+
+담당 엔지니어가 신속하게 내용을 검토한 후 연락드리고 출동하겠습니다. 감사합니다.`;
+      
+      await sendSMS({ receiver: phone, msg: customerMsg });
+
+      // 관리자 알림 문자 발송
+      const adminPhone = process.env.ADMIN_PHONE;
+      if (adminPhone) {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        const formattedCustomerPhone = phone.replace(/\D/g, '').replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+        const adminMsg = `[긴급 지원 접수 알림]
+새로운 긴급 서비스 요청이 등록되었습니다.
+
+■ 제품 ID: ${productId}
+■ 연락처: ${formattedCustomerPhone}
+■ 현장 주소: ${finalAddress}
+
+대시보드(${baseUrl}/admin)에서 조정을 처리해 주시기 바랍니다.`;
+        
+        await sendSMS({ receiver: adminPhone, msg: adminMsg });
+      }
+    } catch (smsError) {
+      console.error('SMS Notification Error (Ignored for API response):', smsError);
+    }
 
     return NextResponse.json({ success: true, id: newRequest.id });
   } catch (error) {

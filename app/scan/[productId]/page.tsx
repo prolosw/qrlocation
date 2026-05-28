@@ -73,9 +73,17 @@ export default function ScanPage({ params }: { params: Promise<{ productId: stri
     }
   };
 
-  // 2. 전화번호 입력 자동 포맷터
+  // 2. 전화번호 입력 자동 포맷터 (0으로 시작하지 않으면 자동으로 010 추가)
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPhone(formatPhone(e.target.value));
+    let raw = e.target.value.replace(/\D/g, '');
+    
+    // 첫 글자가 0 또는 1이 아니면 사용자 편의를 위해 010을 자동으로 접두어로 결합
+    // (1로 시작하는 1588 등 대표번호나 0으로 시작하는 일반 기입은 그대로 허용)
+    if (raw.length > 0 && raw[0] !== '0' && raw[0] !== '1') {
+      raw = '010' + raw;
+    }
+    
+    setPhone(formatPhone(raw));
   };
 
   // 3. 폼 제출 핸들러
