@@ -13,19 +13,20 @@ if (!clientId || !clientSecret) {
   process.exit(1);
 }
 
-const url = `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${lng},${lat}&output=json&orders=roadaddr,addr`;
+const url = `https://maps.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${lng},${lat}&output=json&orders=roadaddr,addr`;
 
 fetch(url, {
   headers: {
     'X-NCP-APIGW-API-KEY-ID': clientId,
     'X-NCP-APIGW-API-KEY': clientSecret,
+    'Referer': 'http://localhost:3000',
   },
 })
   .then(async (res) => {
     console.log('Response Status:', res.status);
     const data = await res.json();
     console.log('Response Body:', JSON.stringify(data, null, 2));
-    
+
     if (data.status?.code === 0) {
       console.log('\n=== Success! Parsed Address ===');
       const roadAddrResult = data.results.find((r) => r.name === 'roadaddr');

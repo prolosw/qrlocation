@@ -13,7 +13,7 @@ export async function reverseGeocode(lat: number, lng: number): Promise<string> 
 
   if (!clientId || !clientSecret) {
     console.log(`[NAVER API Mock] Reverse geocoding requested for lat: ${lat}, lng: ${lng}`);
-    
+
     // 테스트용 다양하고 실감나는 Mock 주소 매핑 (강남역, 서울역, 판교 등)
     if (lat >= 37.49 && lat <= 37.51 && lng >= 127.01 && lng <= 127.04) {
       return '서울특별시 강남구 테헤란로 152 (강남역 GFC 타워)';
@@ -29,12 +29,13 @@ export async function reverseGeocode(lat: number, lng: number): Promise<string> 
 
   try {
     // Naver Map Reverse Geocoding API는 coords 형식으로 경도(lng),위도(lat) 순서로 넘겨야 합니다.
-    const url = `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${lng},${lat}&output=json&orders=roadaddr,addr`;
-    
+    const url = `https://maps.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${lng},${lat}&output=json&orders=roadaddr,addr`;
+
     const res = await fetch(url, {
       headers: {
         'X-NCP-APIGW-API-KEY-ID': clientId,
         'X-NCP-APIGW-API-KEY': clientSecret,
+        'Referer': process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
       },
     });
 
@@ -43,13 +44,13 @@ export async function reverseGeocode(lat: number, lng: number): Promise<string> 
     }
 
     const data = await res.json();
-    
+
     if (data.status?.code !== 0) {
       throw new Error(`NAVER API Error: ${data.status?.message || 'Unknown Status'}`);
     }
 
     const results = data.results || [];
-    
+
     // 1. 도로명 주소(roadaddr) 우선 탐색
     const roadAddrResult = results.find((r: any) => r.name === 'roadaddr');
     if (roadAddrResult) {
