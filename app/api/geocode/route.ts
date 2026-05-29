@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { reverseGeocode } from '@/lib/kakao';
+import { reverseGeocode } from '@/lib/naver';
 
 export const runtime = 'nodejs';
 

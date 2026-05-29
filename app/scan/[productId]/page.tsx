@@ -254,12 +254,12 @@ export default function ScanPage({ params }: { params: Promise<{ productId: stri
                 </p>
                 {coords && (
                   <a
-                    href={`https://map.kakao.com/link/map/${coords.lat},${coords.lng}`}
+                    href={`https://map.naver.com/v5/search/${coords.lng},${coords.lat}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-blue-400 hover:underline inline-flex items-center gap-1 mt-2 font-medium"
                   >
-                    카카오 지도로 현위치 보기
+                    네이버 지도로 현위치 보기
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
