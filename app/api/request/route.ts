@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { reverseGeocode } from '@/lib/kakao';
+import { reverseGeocode } from '@/lib/naver';
 import { sendSMS } from '@/lib/aligo';
 
 export const runtime = 'nodejs';
